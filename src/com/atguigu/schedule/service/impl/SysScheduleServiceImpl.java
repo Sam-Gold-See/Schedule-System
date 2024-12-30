@@ -1,4 +1,6 @@
 package com.atguigu.schedule.service.impl;
 
-public class SysScheduleServiceImpl {
+import com.atguigu.schedule.service.SysScheduleService;
+
+public class SysScheduleServiceImpl implements SysScheduleService {
 }
