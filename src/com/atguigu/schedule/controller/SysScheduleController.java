@@ -1,4 +1,7 @@
 package com.atguigu.schedule.controller;
 
-public class SysScheduleController {
+import jakarta.servlet.annotation.WebServlet;
+
+@WebServlet("/schedule/*")
+public class SysScheduleController extends BaseController {
 }
