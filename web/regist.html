@@ -49,7 +49,7 @@
 
     <script>
         function checkUsername() {
-            let usernameReg = /^[a-zA-Z0-9]{5,10}$/;
+            let usernameReg = /^[a-zA-Z0-9]{4,10}$/;
             let usernameInput = document.getElementById("usernameInput")
             let username = usernameInput.value
             let usernameMsg = document.getElementById("usernameMsg")
@@ -57,7 +57,21 @@
                 usernameMsg.innerText = "格式有误"
                 return false
             }
-            usernameMsg.innerText = "OK"
+            // 格式正确，通过之后，继续校验用户名是否被占用
+            let request = new XMLHttpRequest()
+            // 设置回调函数，设置响应回来的信息如何处理
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    let result = JSON.parse(request.responseText)
+                    if (result.code !== 200)
+                        usernameMsg.innerText = "不可用"
+                }
+            }
+            // 设置请求方式和请求的资源路径
+            request.open("GET", "/user/checkUsernameUsed?username=" + username);
+            // 发送请求
+            request.send()
+            usernameMsg.innerText = "可用"
             return true
         }
 
