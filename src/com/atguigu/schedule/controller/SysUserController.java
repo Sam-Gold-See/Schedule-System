@@ -10,9 +10,6 @@ import com.atguigu.schedule.util.WebUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
 
 @WebServlet("/user/*")
 public class SysUserController extends BaseController {
@@ -46,27 +43,24 @@ public class SysUserController extends BaseController {
 	 *
 	 * @param req  HttpServletRequest 对象，用于获取请求中的参数
 	 * @param resp HttpServletResponse 对象，用于发送响应
-	 * @throws IOException 当发生I/O错误时抛出
 	 */
-	protected void login(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	protected void login(HttpServletRequest req, HttpServletResponse resp) {
 		//1 接收用户名和密钥
-		String username = req.getParameter("username");
-		String userPwd = req.getParameter("userPwd");
+		SysUser sysUser = WebUtil.readJson(req, SysUser.class);
 		//2 调用服务层方法，根据用户名查询用户信息
-		SysUser loginUser = userService.findByUsername(username);
+		SysUser loginUser = userService.findByUsername(sysUser.getUsername());
+
+		Result result;
+
 		if (loginUser == null)
-			//跳转到用户名有误提示页
-			resp.sendRedirect("/loginUsernameError.html");
-			//3 判断密码是否匹配
-		else if (!MD5Util.encrypt(userPwd).equals(loginUser.getUserPwd()))
-			resp.sendRedirect("/loginUserPwdError.html");
-		else {
-			// 登录成功之后，将登录时的用户信息放入session域对象中
-			HttpSession session = req.getSession();
-			session.setAttribute("sysUser", loginUser);
-			//4 跳转到首页
-			resp.sendRedirect("/showSchedule.html");
-		}
+			result = Result.build(null, ResultCodeEnum.USERNAME_ERROR);
+		else if (!MD5Util.encrypt(sysUser.getUserPwd()).equals(loginUser.getUserPwd()))
+			result = Result.build(null, ResultCodeEnum.PASSWORD_ERROR);
+		else
+			result = Result.ok(null);
+
+		//3 将登陆结果响应给客户端
+		WebUtil.writeJson(resp, result);
 	}
 
 	/**
@@ -74,20 +68,16 @@ public class SysUserController extends BaseController {
 	 *
 	 * @param req  HttpServletRequest 对象，用于获取请求中的参数
 	 * @param resp HttpServletResponse 对象，用于发送响应
-	 * @throws IOException 当发生I/O错误时抛出
 	 */
-	protected void regist(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// 1 接收客户端提交的参数
-		String username = req.getParameter("username");
-		String userPwd = req.getParameter("userPwd");
+	protected void regist(HttpServletRequest req, HttpServletResponse resp) {
+		// 1 接收客户端提交的JSON参数，并转换为User对象，获取信息
+		SysUser registUser = WebUtil.readJson(req, SysUser.class);
 		// 2 调用服务层方法，完成注册功能
-		// 将参数放入一个SysUser对象中，在调用regist方法时传入
-		SysUser sysUser = new SysUser(null, username, userPwd);
-		int rows = userService.regist(sysUser);
+		int rows = userService.regist(registUser);
 		// 3 根据注册结果（成功、失败）做页面跳转
-		if (rows > 0)
-			resp.sendRedirect("/registSuccess.html");
-		else
-			resp.sendRedirect("/registFail.html");
+		Result result = Result.ok(null);
+		if (rows < 1)
+			result = Result.build(null, ResultCodeEnum.USERNAME_USED);
+		WebUtil.writeJson(resp, result);
 	}
 }
