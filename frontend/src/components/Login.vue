@@ -3,6 +3,10 @@ import { ref, reactive } from "vue";
 import request from "../utils/request";
 import { useRouter } from "vue-router";
 
+import { defineUser } from "../store/userStore.js";
+
+let sysUser = defineUser();
+
 const router = useRouter();
 
 let loginUser = reactive({
@@ -43,6 +47,8 @@ async function login() {
   let { data } = await request.post("user/login", loginUser);
   if (data.code == 200) {
     alert("登录成功");
+    sysUser.uid = data.data.loginUser.uid;
+    sysUser.username = data.data.loginUser.username;
     router.push("/showSchedule");
   } else if (data.code == 501) alert("用户民有误");
   else if (data.code == 503) alert("密码错误");

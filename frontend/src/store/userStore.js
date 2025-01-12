@@ -1,4 +1,4 @@
-import { createStore } from "pinia";
+import { defineStore } from "pinia";
 
 export const defineUser = defineStore("loginUser", {
   state: () => {
@@ -8,5 +8,10 @@ export const defineUser = defineStore("loginUser", {
     };
   },
   getters: {},
-  actions: {},
+  actions: {
+    $reset() {
+      this.uid = 0;
+      this.username = "";
+    },
+  },
 });

@@ -11,6 +11,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @WebServlet("/user/*")
 public class SysUserController extends BaseController {
 
@@ -56,8 +59,12 @@ public class SysUserController extends BaseController {
 			result = Result.build(null, ResultCodeEnum.USERNAME_ERROR);
 		else if (!MD5Util.encrypt(sysUser.getUserPwd()).equals(loginUser.getUserPwd()))
 			result = Result.build(null, ResultCodeEnum.PASSWORD_ERROR);
-		else
-			result = Result.ok(null);
+		else {
+			Map data = new HashMap();
+			loginUser.setUserPwd("");
+			data.put("loginUser", loginUser);
+			result = Result.ok(data);
+		}
 
 		//3 将登陆结果响应给客户端
 		WebUtil.writeJson(resp, result);
