@@ -35,6 +35,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.path == "/showSchedule") {
     if (sysUser.username == "") next("/login");
+    else next();
   } else {
     next();
   }

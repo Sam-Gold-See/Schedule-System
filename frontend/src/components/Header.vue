@@ -60,7 +60,7 @@ function logout() {
   background-color: antiquewhite;
 }
 .optionDiv {
-  width: 300px;
+  width: 400px;
   float: right;
 }
 </style>

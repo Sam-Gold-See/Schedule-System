@@ -50,7 +50,7 @@ async function login() {
     sysUser.uid = data.data.loginUser.uid;
     sysUser.username = data.data.loginUser.username;
     router.push("/showSchedule");
-  } else if (data.code == 501) alert("用户民有误");
+  } else if (data.code == 501) alert("用户名有误");
   else if (data.code == 503) alert("密码错误");
   else alert("未知错误");
 }
