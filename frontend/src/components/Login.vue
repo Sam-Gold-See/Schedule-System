@@ -17,6 +17,7 @@ let loginUser = reactive({
 let usernameMsg = ref("");
 let userPwdMsg = ref("");
 
+// 验证用户名格式
 function checkUsername() {
   let usernameReg = /^[a-zA-Z0-9]{5,10}$/;
   if (!usernameReg.test(loginUser.username)) {
@@ -27,6 +28,7 @@ function checkUsername() {
   return true;
 }
 
+// 验证密码格式
 function checkUserPwd() {
   let userPwdReg = /^[0-9]{6}$/;
   if (!userPwdReg.test(loginUser.userPwd)) {
@@ -37,6 +39,7 @@ function checkUserPwd() {
   return true;
 }
 
+// 登录
 async function login() {
   let flag1 = checkUsername();
   let flag2 = checkUserPwd();
@@ -44,7 +47,9 @@ async function login() {
     alert("请检查输入");
     return;
   }
+  // 发送登录请求
   let { data } = await request.post("user/login", loginUser);
+  // 处理登录结果
   if (data.code == 200) {
     alert("登录成功");
     sysUser.uid = data.data.loginUser.uid;

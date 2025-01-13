@@ -9,6 +9,7 @@ const router = useRouter();
 let sysUser = defineUser();
 let schedule = defineSchedule();
 
+// 退出登录函数，清空用户信息和日程信息，跳转到登录页面
 function logout() {
   sysUser.$reset();
   schedule.$reset();

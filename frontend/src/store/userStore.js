@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 
+// user数据的pinia定义模块
 export const defineUser = defineStore("loginUser", {
   state: () => {
     return {

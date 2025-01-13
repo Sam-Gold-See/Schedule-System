@@ -15,15 +15,18 @@ let userPwdMsg = ref("");
 let reUserPwd = ref("");
 let reUserPwdMsg = ref("");
 
+// 校验用户名是否可用
 async function checkUsername() {
   let usernameReg = /^[a-zA-Z0-9]{5,10}$/;
   if (!usernameReg.test(registUser.username)) {
     usernameMsg.value = "格式有误";
     return false;
   }
+  // 发送请求
   let { data } = await request.post(
     `user/checkUsernameUsed?username=${registUser.username}`
   );
+  // 处理响应数据
   if (data.code != 200) {
     usernameMsg.value = "用户名占用";
     return false;
@@ -32,6 +35,7 @@ async function checkUsername() {
   return true;
 }
 
+// 校验密码格式
 function checkUserPwd() {
   let userPwdReg = /^[0-9]{6}$/;
   if (!userPwdReg.test(registUser.userPwd)) {
@@ -42,6 +46,7 @@ function checkUserPwd() {
   return true;
 }
 
+// 校验确认密码
 function checkReUserPwd() {
   let userPwdReg = /^[0-9]{6}$/;
   if (!userPwdReg.test(reUserPwd.value)) {
@@ -56,12 +61,14 @@ function checkReUserPwd() {
   return true;
 }
 
+// 注册
 async function regist() {
   // 校验所有的输入框
   let flag1 = await checkUsername();
   let flag2 = await checkUserPwd();
   let flag3 = await checkReUserPwd();
   if (flag1 && flag2 && flag3) {
+    // 发送请求
     let { data } = await request.post("user/regist", registUser);
     if (data.code == 200) {
       alert("注册成功，请登录");

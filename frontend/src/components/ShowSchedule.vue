@@ -5,13 +5,15 @@ import { defineSchedule } from "../store/scheduleStore";
 let sysUser = defineUser();
 let schedule = defineSchedule();
 
-import { ref, reactive, onUpdated, onMounted } from "vue";
+import { onMounted } from "vue";
 import request from "../utils/request";
 
+// 页面加载完成后，获取日程列表
 onMounted(() => {
   showSchedule();
 });
 
+// 展示日程列表（可充当刷新效果）
 async function showSchedule() {
   let { data } = await request.get("schedule/findAllSchedule", {
     params: { uid: sysUser.uid },
@@ -19,6 +21,7 @@ async function showSchedule() {
   schedule.itemList = data.data.itemList;
 }
 
+// 添加日程
 async function addItem() {
   let { data } = await request.get("schedule/addDefaultSchedule", {
     params: { uid: sysUser.uid },
@@ -30,6 +33,7 @@ async function addItem() {
   }
 }
 
+// 修改日程并且保存
 async function updateItem(index) {
   let { data } = await request.post(
     "schedule/updateSchedule",
@@ -43,6 +47,7 @@ async function updateItem(index) {
   }
 }
 
+// 删除日程
 async function removeItem(index) {
   let sid = schedule.itemList[index].sid;
   let { data } = await request.get("schedule/removeSchedule", {
