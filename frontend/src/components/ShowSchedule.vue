@@ -1,4 +1,60 @@
-<script setup></script>
+<script setup>
+import { defineUser } from "../store/userStore";
+import { defineSchedule } from "../store/scheduleStore";
+
+let sysUser = defineUser();
+let schedule = defineSchedule();
+
+import { ref, reactive, onUpdated, onMounted } from "vue";
+import request from "../utils/request";
+
+onMounted(() => {
+  showSchedule();
+});
+
+async function showSchedule() {
+  let { data } = await request.get("schedule/findAllSchedule", {
+    params: { uid: sysUser.uid },
+  });
+  schedule.itemList = data.data.itemList;
+}
+
+async function addItem() {
+  let { data } = await request.get("schedule/addDefaultSchedule", {
+    params: { uid: sysUser.uid },
+  });
+  if (data.code == 200) {
+    showSchedule();
+  } else {
+    alert("添加日程失败");
+  }
+}
+
+async function updateItem(index) {
+  let { data } = await request.post(
+    "schedule/updateSchedule",
+    schedule.itemList[index]
+  );
+
+  if (data.code == 200) {
+    showSchedule();
+  } else {
+    alert("修改日程失败");
+  }
+}
+
+async function removeItem(index) {
+  let sid = schedule.itemList[index].sid;
+  let { data } = await request.get("schedule/removeSchedule", {
+    params: { sid: sid },
+  });
+  if (data.code == 200) {
+    showSchedule();
+  } else {
+    alert("删除日程失败");
+  }
+}
+</script>
 
 <template>
   <div>
@@ -13,18 +69,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="ltr">
-          <td></td>
-          <td></td>
-          <td></td>
+        <tr class="ltr" v-for="(item, index) in schedule.itemList" :key="index">
+          <td v-text="index + 1"></td>
+          <td>
+            <input type="text" v-model="item.title" />
+          </td>
+          <td>
+            <input type="radio" value="1" v-model="item.completed" />已完成
+            <input type="radio" value="0" v-model="item.completed" />未完成
+          </td>
           <td class="buttonContainer">
-            <button class="btn1">删除</button>
-            <button class="btn1">保存修改</button>
+            <button class="btn1" @click="removeItem(index)">删除</button>
+            <button class="btn1" @click="updateItem(index)">保存修改</button>
           </td>
         </tr>
         <tr class="ltrButtonContainer">
           <td colspan="4">
-            <button class="btn1">新增日程</button>
+            <button class="btn1" @click="addItem()">新增日程</button>
           </td>
         </tr>
       </tbody>
