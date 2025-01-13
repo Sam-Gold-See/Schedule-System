@@ -5,10 +5,15 @@ package com.atguigu.schedule.common;
  */
 
 public enum ResultCodeEnum {
+	// 正常
 	SUCCESS(200, "success"),
+ 	// 用户名错误
 	USERNAME_ERROR(501, "usernameError"),
+ 	// 密码错误
 	PASSWORD_ERROR(503, "passwordError"),
+  	// 账号未登录
 	NOTLOGIN(504, "notLogin"),
+	// 用户名已占用
 	USERNAME_USED(505, "usernameUsed");
 
 	private final Integer code;
